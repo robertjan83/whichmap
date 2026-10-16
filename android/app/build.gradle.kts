@@ -11,8 +11,18 @@ android {
         applicationId = "app.whichmap"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
+    }
+
+    signingConfigs {
+        // Vaste debug-sleutel, zodat nieuwe builds over de oude heen geïnstalleerd kunnen worden
+        getByName("debug") {
+            storeFile = file("../debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {
