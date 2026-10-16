@@ -53,13 +53,23 @@
   .mode::before, .mode::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--accent)); max-width: 90px; }
   .mode::after { transform: scaleX(-1); }
 
-  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 14px; }
+  .modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
   .modes button {
     font-family: "Teko", sans-serif; font-size: 24px; letter-spacing: .2em; text-transform: uppercase; line-height: 1;
     background: var(--panel); color: var(--muted); border: 1px solid var(--line); border-bottom: 3px solid var(--line);
     padding: 12px 6px 8px; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   .modes button[aria-pressed="true"] { color: #0a0b09; background: var(--accent); border-color: var(--accent); border-bottom-color: #b8901a; }
+  .apk { margin-top: 26px; text-align: center; }
+  .apkBtn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: "Teko", sans-serif; font-size: clamp(19px, 5.6vw, 24px); letter-spacing: .1em; text-transform: uppercase; line-height: 1; text-align: center; max-width: 100%;
+    background: var(--accent); color: #0a0b09; text-decoration: none; padding: 13px 20px 9px;
+    border-bottom: 3px solid #b8901a; -webkit-tap-highlight-color: transparent;
+  }
+  .apkBtn svg { margin-top: -4px; }
+  .apk small { display: block; margin-top: 10px; color: var(--muted); font-size: 13px; letter-spacing: .06em; }
+  .apk + .install { margin-top: 14px; }
   .install { margin-top: 26px; text-align: center; }
   .install button {
     font-family: "Teko", sans-serif; font-size: 22px; letter-spacing: .18em; text-transform: uppercase; line-height: 1;
@@ -133,7 +143,7 @@
   h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
   .queue { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
   .queue li {
-    display: grid; grid-template-columns: 104px 1fr auto; align-items: center; gap: 14px;
+    display: grid; grid-template-columns: 104px minmax(0, 1fr) auto; align-items: center; gap: 14px;
     background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent);
     padding: 8px 14px 8px 8px;
   }
@@ -144,6 +154,21 @@
   .q-sub { color: var(--muted); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; margin-top: 3px; }
   .q-time { font-family: "Teko", sans-serif; font-size: 28px; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
 
+  @media (max-width: 380px) {
+    .queue li { grid-template-columns: 84px minmax(0, 1fr) auto; gap: 10px; }
+    .thumb { width: 84px; }
+    .q-time { font-size: 24px; }
+    .modes button { font-size: 20px; letter-spacing: .12em; }
+    .mode { font-size: 19px; letter-spacing: .14em; }
+  }
+  @media (max-width: 340px) {
+    .mode { font-size: 17px; letter-spacing: .08em; gap: 8px; }
+    .mode::before, .mode::after { display: none; }
+    .timer { font-size: 50px; }
+    .until b { font-size: 17px; }
+    .name { font-size: 36px; }
+    .q-name { font-size: 18px; }
+  }
   footer { color: var(--muted); font-size: 12px; letter-spacing: .06em; margin-top: 30px; line-height: 1.6; text-align: center; }
 </style>
 </head>
@@ -174,6 +199,14 @@
 
   <h2 data-i18n="coming">Coming up</h2>
   <ul class="queue" id="queue"></ul>
+
+  <div class="apk" id="apk">
+    <a class="apkBtn" href="https://github.com/robertjan83/whichmap/releases/download/android-latest/WhichMap.apk" download="WhichMap.apk" rel="noopener">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>
+      <span data-i18n="apk">Download Android app</span>
+    </a>
+    <small data-i18n="apkNote">APK · includes home screen widget</small>
+  </div>
 
   <div class="install" id="install" hidden>
     <button type="button" id="installBtn" data-i18n="install">Install app</button>
@@ -283,11 +316,11 @@
 
   // ===== Talen / Languages =====
   const I18N = {
-    en: { locale: "en-GB", install: "Install app", iosHint: "Install: tap Share, then “Add to Home Screen”.", title: "Which Map — Resurgence Quads", live: "Live rotation", active: "NOW LIVE", current: "Current map", next: "Up next", coming: "Coming up", until: "until", foot1: "10 minutes per map. Times in your local time zone.", foot2: "Unofficial fan page, not affiliated with Activision." },
-    nl: { locale: "nl-NL", install: "App installeren", iosHint: "Installeren: tik op Delen en kies “Zet op beginscherm”.", title: "Welke map — Resurgence Quads", live: "Live rotatie", active: "NU ACTIEF", current: "Huidige map", next: "Daarna", coming: "Komt eraan", until: "tot", foot1: "10 minuten per map. Tijden in jouw lokale tijdzone.", foot2: "Niet-officiële fanpagina, niet gelieerd aan Activision." },
-    de: { locale: "de-DE", install: "App installieren", iosHint: "Installieren: Teilen antippen, dann „Zum Home-Bildschirm“.", title: "Welche Map — Resurgence Quads", live: "Live-Rotation", active: "JETZT AKTIV", current: "Aktuelle Map", next: "Danach", coming: "Als Nächstes", until: "bis", foot1: "10 Minuten pro Map. Zeiten in deiner lokalen Zeitzone.", foot2: "Inoffizielle Fanseite, nicht mit Activision verbunden." },
-    fr: { locale: "fr-FR", install: "Installer l’app", iosHint: "Installer : touche Partager, puis « Sur l’écran d’accueil ».", title: "Quelle carte — Resurgence Quads", live: "Rotation en direct", active: "EN COURS", current: "Carte actuelle", next: "Ensuite", coming: "À venir", until: "jusqu’à", foot1: "10 minutes par carte. Heures dans ton fuseau horaire local.", foot2: "Page de fans non officielle, non affiliée à Activision." },
-    es: { locale: "es-ES", install: "Instalar app", iosHint: "Instalar: toca Compartir y luego «Añadir a pantalla de inicio».", title: "Qué mapa — Resurgence Quads", live: "Rotación en vivo", active: "EN VIVO", current: "Mapa actual", next: "Después", coming: "Próximamente", until: "hasta", foot1: "10 minutos por mapa. Horas en tu zona horaria local.", foot2: "Página de fans no oficial, sin relación con Activision." },
+    en: { locale: "en-GB", apk: "Download Android app", apkNote: "APK · includes home screen widget", install: "Install app", iosHint: "Install: tap Share, then “Add to Home Screen”.", title: "Which Map — Resurgence Quads", live: "Live rotation", active: "NOW LIVE", current: "Current map", next: "Up next", coming: "Coming up", until: "until", foot1: "10 minutes per map. Times in your local time zone.", foot2: "Unofficial fan page, not affiliated with Activision." },
+    nl: { locale: "nl-NL", apk: "Download Android-app", apkNote: "APK · inclusief widget voor je beginscherm", install: "App installeren", iosHint: "Installeren: tik op Delen en kies “Zet op beginscherm”.", title: "Welke map — Resurgence Quads", live: "Live rotatie", active: "NU ACTIEF", current: "Huidige map", next: "Daarna", coming: "Komt eraan", until: "tot", foot1: "10 minuten per map. Tijden in jouw lokale tijdzone.", foot2: "Niet-officiële fanpagina, niet gelieerd aan Activision." },
+    de: { locale: "de-DE", apk: "Android-App herunterladen", apkNote: "APK · inkl. Widget für den Startbildschirm", install: "App installieren", iosHint: "Installieren: Teilen antippen, dann „Zum Home-Bildschirm“.", title: "Welche Map — Resurgence Quads", live: "Live-Rotation", active: "JETZT AKTIV", current: "Aktuelle Map", next: "Danach", coming: "Als Nächstes", until: "bis", foot1: "10 Minuten pro Map. Zeiten in deiner lokalen Zeitzone.", foot2: "Inoffizielle Fanseite, nicht mit Activision verbunden." },
+    fr: { locale: "fr-FR", apk: "Télécharger l’app Android", apkNote: "APK · avec widget pour l’écran d’accueil", install: "Installer l’app", iosHint: "Installer : touche Partager, puis « Sur l’écran d’accueil ».", title: "Quelle carte — Resurgence Quads", live: "Rotation en direct", active: "EN COURS", current: "Carte actuelle", next: "Ensuite", coming: "À venir", until: "jusqu’à", foot1: "10 minutes par carte. Heures dans ton fuseau horaire local.", foot2: "Page de fans non officielle, non affiliée à Activision." },
+    es: { locale: "es-ES", apk: "Descargar app Android", apkNote: "APK · incluye widget para la pantalla de inicio", install: "Instalar app", iosHint: "Instalar: toca Compartir y luego «Añadir a pantalla de inicio».", title: "Qué mapa — Resurgence Quads", live: "Rotación en vivo", active: "EN VIVO", current: "Mapa actual", next: "Después", coming: "Próximamente", until: "hasta", foot1: "10 minutos por mapa. Horas en tu zona horaria local.", foot2: "Página de fans no oficial, sin relación con Activision." },
   };
   let lang = "en";
   function detectLang() {
@@ -422,6 +455,8 @@
   }
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  // De APK is niet te installeren op iOS en niet nodig binnen de Android-app zelf
+  if (isIOS || location.protocol === "file:") document.getElementById("apk").hidden = true;
   const installBox = document.getElementById("install"), installBtn = document.getElementById("installBtn"), iosHint = document.getElementById("iosHint");
   let deferredPrompt = null;
   if (!standalone) {
