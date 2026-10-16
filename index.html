@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Which Map — Resurgence Quads</title>
+<meta name="description" content="Welke map is nu actief in Resurgence Quads? Live countdown met rotatie.">
+<meta name="theme-color" content="#0d0f12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23ff7a1a'/%3E%3Cpath d='M32 14v18l12 8' stroke='%230d0f12' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --panel: #161a20;
+    --line: #262c35;
+    --text: #eef1f5;
+    --muted: #8a93a1;
+    --accent: #ff7a1a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+  header h1 { font-size: 15px; letter-spacing: .14em; text-transform: uppercase; margin: 0; color: var(--muted); font-weight: 600; }
+  header .clock { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; }
+
+  .now {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .art { position: relative; aspect-ratio: 16 / 9; background: #000; }
+  .art img, .art svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .badge {
+    position: absolute; top: 12px; left: 12px;
+    background: var(--accent); color: #111;
+    font-weight: 800; font-size: 12px; letter-spacing: .12em;
+    padding: 6px 10px; border-radius: 999px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #111; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { opacity: .25; } }
+
+  .info { padding: 18px 18px 20px; }
+  .label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .12em; }
+  .name { font-size: clamp(30px, 9vw, 44px); font-weight: 800; margin: 4px 0 14px; line-height: 1.05; }
+  .timer-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .timer { font-size: clamp(44px, 15vw, 72px); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; color: var(--accent); }
+  .until { color: var(--muted); font-size: 14px; text-align: right; }
+  .until b { color: var(--text); display: block; font-size: 16px; }
+  .bar { height: 6px; background: var(--line); border-radius: 999px; margin-top: 16px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width 1s linear; }
+
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 26px 0 10px; font-weight: 600; }
+  .queue { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .queue li {
+    display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: 14px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 8px 14px 8px 8px;
+  }
+  .thumb { position: relative; width: 96px; aspect-ratio: 16 / 9; border-radius: 9px; overflow: hidden; background: #000; }
+  .thumb img, .thumb svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .q-name { font-weight: 700; font-size: 16px; }
+  .q-sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .q-time { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 18px; }
+
+  footer { color: var(--muted); font-size: 12px; margin-top: 28px; line-height: 1.5; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Resurgence Quads</h1>
+    <span class="clock" id="clock">--:--:--</span>
+  </header>
+
+  <section class="now" aria-live="polite">
+    <div class="art" id="nowArt"><span class="badge">NU ACTIEF</span></div>
+    <div class="info">
+      <div class="label">Huidige map</div>
+      <div class="name" id="nowName">…</div>
+      <div class="timer-row">
+        <div class="timer" id="timer">--:--</div>
+        <div class="until">Daarna<b id="nextName">…</b></div>
+      </div>
+      <div class="bar"><i id="bar"></i></div>
+    </div>
+  </section>
+
+  <h2>Komt eraan</h2>
+  <ul class="queue" id="queue"></ul>
+
+  <footer>
+    Rotatie van 10 minuten per map. Tijden in jouw lokale tijdzone.<br>
+    Niet-officiële fanpagina, niet gelieerd aan Activision.
+  </footer>
+</div>
+
+<!-- Map-illustraties (eigen artwork). Wil je echte screenshots? Zet ze in /img als
+     rebirth.jpg, fortune.jpg en haunted.jpg; de pagina gebruikt die dan automatisch. -->
+<template id="art-rebirth">
+  <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="rbSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b3a5c"/><stop offset="1" stop-color="#6a8fb0"/></linearGradient>
+      <linearGradient id="rbSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b5876"/><stop offset="1" stop-color="#0e2233"/></linearGradient>
+    </defs>
+    <rect width="320" height="180" fill="url(#rbSky)"/>
+    <rect y="110" width="320" height="70" fill="url(#rbSea)"/>
+    <path d="M40 118 Q90 92 160 96 Q240 92 290 118 Z" fill="#3c4a3a"/>
+    <path d="M60 118 Q110 104 160 106 Q220 104 270 118 Z" fill="#4d5c47"/>
+    <rect x="118" y="72" width="70" height="36" fill="#7b7f84"/>
+    <rect x="118" y="72" width="70" height="6" fill="#5c6066"/>
+    <g fill="#2c3036"><rect x="126" y="84" width="6" height="8"/><rect x="138" y="84" width="6" height="8"/><rect x="150" y="84" width="6" height="8"/><rect x="162" y="84" width="6" height="8"/><rect x="174" y="84" width="6" height="8"/></g>
+    <rect x="196" y="58" width="10" height="50" fill="#8a8e93"/>
+    <rect x="192" y="54" width="18" height="8" fill="#5c6066"/>
+    <rect x="96" y="88" width="16" height="20" fill="#6c7075"/>
+    <path d="M0 140 Q40 136 80 140 T160 140 T240 140 T320 140" stroke="#ffffff22" fill="none"/>
+    <path d="M0 156 Q40 152 80 156 T160 156 T240 156 T320 156" stroke="#ffffff18" fill="none"/>
+  </svg>
+</template>
+<template id="art-fortune">
+  <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="fkSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3a35c"/><stop offset="1" stop-color="#f7d29a"/></linearGradient>
+      <linearGradient id="fkSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d8a9a"/><stop offset="1" stop-color="#0f3e4a"/></linearGradient>
+    </defs>
+    <rect width="320" height="180" fill="url(#fkSky)"/>
+    <circle cx="260" cy="52" r="20" fill="#fff1c9" opacity=".85"/>
+    <rect y="118" width="320" height="62" fill="url(#fkSea)"/>
+    <path d="M30 124 L80 96 L130 104 L170 70 L220 92 L300 124 Z" fill="#6b7a4a"/>
+    <path d="M150 124 L170 70 L200 82 L215 124 Z" fill="#8d8a7a"/>
+    <g fill="#c9b99a">
+      <rect x="152" y="46" width="44" height="30"/>
+      <rect x="146" y="34" width="14" height="42"/>
+      <rect x="188" y="34" width="14" height="42"/>
+    </g>
+    <g fill="#a99778">
+      <rect x="146" y="30" width="4" height="5"/><rect x="152" y="30" width="4" height="5"/><rect x="156" y="30" width="4" height="5"/>
+      <rect x="188" y="30" width="4" height="5"/><rect x="194" y="30" width="4" height="5"/><rect x="198" y="30" width="4" height="5"/>
+    </g>
+    <path d="M168 76 v-12 a6 6 0 0 1 12 0 v12 Z" fill="#4a3c2a"/>
+    <path d="M60 106 l6 -18 l6 18 Z M240 108 l5 -16 l5 16 Z" fill="#3f5a2f"/>
+    <path d="M0 140 Q40 136 80 140 T160 140 T240 140 T320 140" stroke="#ffffff33" fill="none"/>
+  </svg>
+</template>
+<template id="art-haunted">
+  <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="hhSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#160d24"/><stop offset="1" stop-color="#4a2a4f"/></linearGradient>
+      <radialGradient id="hhMoon"><stop offset="0" stop-color="#ffe9b0"/><stop offset="1" stop-color="#ffe9b000"/></radialGradient>
+    </defs>
+    <rect width="320" height="180" fill="url(#hhSky)"/>
+    <circle cx="232" cy="54" r="46" fill="url(#hhMoon)" opacity=".5"/>
+    <circle cx="232" cy="54" r="24" fill="#ffe2a0"/>
+    <path d="M0 140 Q80 118 160 128 T320 124 V180 H0 Z" fill="#1a1222"/>
+    <g fill="#0e0a14">
+      <path d="M70 132 V96 L92 78 L114 96 V132 Z"/>
+      <rect x="100" y="70" width="6" height="16"/>
+      <path d="M180 130 V104 L196 90 L212 104 V130 Z"/>
+      <path d="M128 132 V60 L136 48 L144 60 V132 Z"/>
+      <path d="M30 140 C32 110 26 100 22 92 M30 120 C38 112 44 112 48 104 M28 110 C20 104 16 100 12 98" stroke="#0e0a14" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M280 136 C282 112 276 102 272 94 M280 118 C288 110 294 110 298 102" stroke="#0e0a14" stroke-width="4" fill="none" stroke-linecap="round"/>
+    </g>
+    <g fill="#ff9b2f"><rect x="80" y="104" width="6" height="8"/><rect x="98" y="104" width="6" height="8"/><rect x="193" y="110" width="6" height="7"/><rect x="134" y="80" width="4" height="7"/></g>
+    <g fill="#ff7a1a">
+      <ellipse cx="156" cy="146" rx="9" ry="7"/><ellipse cx="236" cy="142" rx="7" ry="5.5"/>
+    </g>
+    <g fill="#2b1608"><path d="M152 144 l2 -2 l2 2 Z M158 144 l2 -2 l2 2 Z M152 149 h8 l-1 2 h-6 Z"/></g>
+    <path d="M60 40 l6 4 l6 -4 l-2 6 l-4 -2 l-4 2 Z M90 26 l5 3 l5 -3 l-2 5 l-3 -2 l-3 2 Z" fill="#0e0a14"/>
+  </svg>
+</template>
+
+<script>
+  // ===== Instellingen =====
+  // Volgorde van de rotatie
+  const MAPS = [
+    { id: "haunted", name: "Haunted Hollow" },
+    { id: "fortune", name: "Fortune's Keep" },
+    { id: "rebirth", name: "Rebirth Island" },
+  ];
+  const SLOT_MS = 10 * 60 * 1000; // 10 minuten per map
+  // Ijkpunt: Fortune's Keep startte op vr 16 okt 2026 om 21:10:00 Amsterdamse tijd (19:10 UTC).
+  // Loopt de timer een paar seconden voor of achter? Pas dit tijdstip aan.
+  const ANCHOR_MS = Date.UTC(2026, 9, 16, 19, 10, 0);
+  const ANCHOR_INDEX = 1; // index in MAPS van de map die op het ijkpunt startte
+
+  // ===== Logica =====
+  const mod = (n, m) => ((n % m) + m) % m;
+  const pad = n => String(n).padStart(2, "0");
+  const fmtTime = d => d.toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" });
+
+  function slotAt(t) {
+    const elapsed = t - ANCHOR_MS;
+    const slot = Math.floor(elapsed / SLOT_MS);
+    const start = ANCHOR_MS + slot * SLOT_MS;
+    return { index: mod(ANCHOR_INDEX + slot, MAPS.length), start, end: start + SLOT_MS };
+  }
+
+  // Afbeelding: eerst /img/<id>.jpg proberen, anders de ingebouwde illustratie
+  const imgAvailable = {};
+  MAPS.forEach(m => {
+    const probe = new Image();
+    probe.onload = () => { imgAvailable[m.id] = probe.src; lastKey = ""; render(); };
+    probe.src = "img/" + m.id + ".jpg";
+  });
+  function artFor(id, alt) {
+    if (imgAvailable[id]) {
+      const img = document.createElement("img");
+      img.src = imgAvailable[id]; img.alt = alt;
+      return img;
+    }
+    return document.getElementById("art-" + id).content.firstElementChild.cloneNode(true);
+  }
+
+  const $ = id => document.getElementById(id);
+  let lastKey = "";
+
+  function render() {
+    const now = Date.now();
+    const cur = slotAt(now);
+    const map = MAPS[cur.index];
+    const left = Math.max(0, cur.end - now);
+    const secs = Math.ceil(left / 1000);
+
+    $("clock").textContent = new Date(now).toLocaleTimeString("nl-NL");
+    $("timer").textContent = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60);
+    $("bar").style.width = ((now - cur.start) / SLOT_MS * 100).toFixed(2) + "%";
+    document.title = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60) + " · " + map.name;
+
+    // Alleen opnieuw opbouwen als de map wisselt
+    const key = cur.start + ":" + Object.keys(imgAvailable).join(",");
+    if (key === lastKey) return;
+    lastKey = key;
+
+    $("nowName").textContent = map.name;
+    $("nextName").textContent = MAPS[mod(cur.index + 1, MAPS.length)].name;
+    const art = $("nowArt");
+    [...art.querySelectorAll("img, svg")].forEach(n => n.remove());
+    art.prepend(artFor(map.id, map.name));
+
+    const q = $("queue");
+    q.innerHTML = "";
+    for (let i = 1; i <= 5; i++) {
+      const start = cur.start + i * SLOT_MS;
+      const m = MAPS[mod(cur.index + i, MAPS.length)];
+      const li = document.createElement("li");
+      const thumb = document.createElement("div");
+      thumb.className = "thumb";
+      thumb.appendChild(artFor(m.id, m.name));
+      const txt = document.createElement("div");
+      txt.innerHTML = '<div class="q-name"></div><div class="q-sub"></div>';
+      txt.querySelector(".q-name").textContent = m.name;
+      txt.querySelector(".q-sub").textContent = "tot " + fmtTime(new Date(start + SLOT_MS));
+      const time = document.createElement("div");
+      time.className = "q-time";
+      time.textContent = fmtTime(new Date(start));
+      li.append(thumb, txt, time);
+      q.appendChild(li);
+    }
+  }
+
+  render();
+  setInterval(render, 1000);
+  // Na terugkomen in de tab (mobiel) meteen bijwerken
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { lastKey = ""; render(); } });
+</script>
+</body>
+</html>
