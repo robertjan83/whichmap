@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WhichMap</string>
+    <string name="widget_next">Daarna:</string>
+    <string name="widget_desc">Live maprotatie voor Warzone Resurgence</string>
+    <string name="config_title">Kies spelmodus</string>
+</resources>

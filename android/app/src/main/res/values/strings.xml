@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WhichMap</string>
+    <string name="widget_next">Next:</string>
+    <string name="widget_desc">Live map rotation for Warzone Resurgence</string>
+    <string name="config_title">Choose game mode</string>
+</resources>
