@@ -6,7 +6,13 @@
 <title>Which Map — Warzone Resurgence</title>
 <meta name="description" content="Which map is live in Warzone Resurgence Solo, Duos or Quads? Live countdown and rotation.">
 <meta name="theme-color" content="#0a0b09">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23ff7a1a'/%3E%3Cpath d='M32 14v18l12 8' stroke='%230d0f12' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="WhichMap">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
@@ -54,6 +60,12 @@
     padding: 12px 6px 8px; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   .modes button[aria-pressed="true"] { color: #0a0b09; background: var(--accent); border-color: var(--accent); border-bottom-color: #b8901a; }
+  .install { margin-top: 26px; text-align: center; }
+  .install button {
+    font-family: "Teko", sans-serif; font-size: 22px; letter-spacing: .18em; text-transform: uppercase; line-height: 1;
+    background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 12px 22px 8px; cursor: pointer;
+  }
+  .install span { color: var(--muted); font-size: 14px; letter-spacing: .04em; }
   .langs { display: flex; justify-content: center; gap: 6px; margin: -6px 0 16px; }
   .langs button {
     font: inherit; font-family: "Teko", sans-serif; font-size: 16px; letter-spacing: .12em; line-height: 1;
@@ -163,6 +175,11 @@
   <h2 data-i18n="coming">Coming up</h2>
   <ul class="queue" id="queue"></ul>
 
+  <div class="install" id="install" hidden>
+    <button type="button" id="installBtn" data-i18n="install">Install app</button>
+    <span id="iosHint" data-i18n="iosHint" hidden>Install: tap Share, then “Add to Home Screen”.</span>
+  </div>
+
   <footer>
     <span data-i18n="foot1">10 minutes per map. Times in your local time zone.</span><br>
     <span data-i18n="foot2">Unofficial fan page, not affiliated with Activision.</span>
@@ -266,11 +283,11 @@
 
   // ===== Talen / Languages =====
   const I18N = {
-    en: { locale: "en-GB", title: "Which Map — Resurgence Quads", live: "Live rotation", active: "NOW LIVE", current: "Current map", next: "Up next", coming: "Coming up", until: "until", foot1: "10 minutes per map. Times in your local time zone.", foot2: "Unofficial fan page, not affiliated with Activision." },
-    nl: { locale: "nl-NL", title: "Welke map — Resurgence Quads", live: "Live rotatie", active: "NU ACTIEF", current: "Huidige map", next: "Daarna", coming: "Komt eraan", until: "tot", foot1: "10 minuten per map. Tijden in jouw lokale tijdzone.", foot2: "Niet-officiële fanpagina, niet gelieerd aan Activision." },
-    de: { locale: "de-DE", title: "Welche Map — Resurgence Quads", live: "Live-Rotation", active: "JETZT AKTIV", current: "Aktuelle Map", next: "Danach", coming: "Als Nächstes", until: "bis", foot1: "10 Minuten pro Map. Zeiten in deiner lokalen Zeitzone.", foot2: "Inoffizielle Fanseite, nicht mit Activision verbunden." },
-    fr: { locale: "fr-FR", title: "Quelle carte — Resurgence Quads", live: "Rotation en direct", active: "EN COURS", current: "Carte actuelle", next: "Ensuite", coming: "À venir", until: "jusqu’à", foot1: "10 minutes par carte. Heures dans ton fuseau horaire local.", foot2: "Page de fans non officielle, non affiliée à Activision." },
-    es: { locale: "es-ES", title: "Qué mapa — Resurgence Quads", live: "Rotación en vivo", active: "EN VIVO", current: "Mapa actual", next: "Después", coming: "Próximamente", until: "hasta", foot1: "10 minutos por mapa. Horas en tu zona horaria local.", foot2: "Página de fans no oficial, sin relación con Activision." },
+    en: { locale: "en-GB", install: "Install app", iosHint: "Install: tap Share, then “Add to Home Screen”.", title: "Which Map — Resurgence Quads", live: "Live rotation", active: "NOW LIVE", current: "Current map", next: "Up next", coming: "Coming up", until: "until", foot1: "10 minutes per map. Times in your local time zone.", foot2: "Unofficial fan page, not affiliated with Activision." },
+    nl: { locale: "nl-NL", install: "App installeren", iosHint: "Installeren: tik op Delen en kies “Zet op beginscherm”.", title: "Welke map — Resurgence Quads", live: "Live rotatie", active: "NU ACTIEF", current: "Huidige map", next: "Daarna", coming: "Komt eraan", until: "tot", foot1: "10 minuten per map. Tijden in jouw lokale tijdzone.", foot2: "Niet-officiële fanpagina, niet gelieerd aan Activision." },
+    de: { locale: "de-DE", install: "App installieren", iosHint: "Installieren: Teilen antippen, dann „Zum Home-Bildschirm“.", title: "Welche Map — Resurgence Quads", live: "Live-Rotation", active: "JETZT AKTIV", current: "Aktuelle Map", next: "Danach", coming: "Als Nächstes", until: "bis", foot1: "10 Minuten pro Map. Zeiten in deiner lokalen Zeitzone.", foot2: "Inoffizielle Fanseite, nicht mit Activision verbunden." },
+    fr: { locale: "fr-FR", install: "Installer l’app", iosHint: "Installer : touche Partager, puis « Sur l’écran d’accueil ».", title: "Quelle carte — Resurgence Quads", live: "Rotation en direct", active: "EN COURS", current: "Carte actuelle", next: "Ensuite", coming: "À venir", until: "jusqu’à", foot1: "10 minutes par carte. Heures dans ton fuseau horaire local.", foot2: "Page de fans non officielle, non affiliée à Activision." },
+    es: { locale: "es-ES", install: "Instalar app", iosHint: "Instalar: toca Compartir y luego «Añadir a pantalla de inicio».", title: "Qué mapa — Resurgence Quads", live: "Rotación en vivo", active: "EN VIVO", current: "Mapa actual", next: "Después", coming: "Próximamente", until: "hasta", foot1: "10 minutos por mapa. Horas en tu zona horaria local.", foot2: "Página de fans no oficial, sin relación con Activision." },
   };
   let lang = "en";
   function detectLang() {
@@ -398,6 +415,25 @@
   setMode(mode, false);
   setLang(detectLang(), false);
   setInterval(render, 1000);
+
+  // ===== App-installatie (PWA) =====
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const installBox = document.getElementById("install"), installBtn = document.getElementById("installBtn"), iosHint = document.getElementById("iosHint");
+  let deferredPrompt = null;
+  if (!standalone) {
+    if (isIOS) { installBtn.hidden = true; iosHint.hidden = false; installBox.hidden = false; }
+    window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; installBtn.hidden = false; iosHint.hidden = true; installBox.hidden = false; });
+    installBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt(); try { await deferredPrompt.userChoice; } catch (e) {}
+      deferredPrompt = null; installBox.hidden = true;
+    });
+    window.addEventListener("appinstalled", () => { installBox.hidden = true; });
+  }
   // Na terugkomen in de tab (mobiel) meteen bijwerken
   document.addEventListener("visibilitychange", () => { if (!document.hidden) { lastKey = ""; render(); } });
 </script>

@@ -1,0 +1,24 @@
+{
+  "name": "Warzone Map Rotation",
+  "short_name": "WhichMap",
+  "description": "Live countdown for the Warzone Resurgence map rotation (Solo, Duos, Quads).",
+  "id": "./",
+  "start_url": "./?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0b09",
+  "theme_color": "#0a0b09",
+  "lang": "en",
+  "categories": ["games", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Solo", "url": "./?mode=solo&source=shortcut", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Duos", "url": "./?mode=duos&source=shortcut", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Quads", "url": "./?mode=quads&source=shortcut", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
