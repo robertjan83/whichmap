@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Which Map — Resurgence Quads</title>
-<meta name="description" content="Which map is live in Warzone Resurgence Quads? Live countdown and rotation.">
+<title>Which Map — Warzone Resurgence</title>
+<meta name="description" content="Which map is live in Warzone Resurgence Solo, Duos or Quads? Live countdown and rotation.">
 <meta name="theme-color" content="#0a0b09">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23ff7a1a'/%3E%3Cpath d='M32 14v18l12 8' stroke='%230d0f12' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,6 +47,13 @@
   .mode::before, .mode::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--accent)); max-width: 90px; }
   .mode::after { transform: scaleX(-1); }
 
+  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 14px; }
+  .modes button {
+    font-family: "Teko", sans-serif; font-size: 24px; letter-spacing: .2em; text-transform: uppercase; line-height: 1;
+    background: var(--panel); color: var(--muted); border: 1px solid var(--line); border-bottom: 3px solid var(--line);
+    padding: 12px 6px 8px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .modes button[aria-pressed="true"] { color: #0a0b09; background: var(--accent); border-color: var(--accent); border-bottom-color: #b8901a; }
   .langs { display: flex; justify-content: center; gap: 6px; margin: -6px 0 16px; }
   .langs button {
     font: inherit; font-family: "Teko", sans-serif; font-size: 16px; letter-spacing: .12em; line-height: 1;
@@ -131,7 +138,8 @@
 <body>
 <div class="wrap">
   <img class="logo" src="img/logo.png" alt="Call of Duty Warzone" width="667" height="214">
-  <div class="mode">Resurgence Quads</div>
+  <div class="mode">Resurgence <span id="modeName">Quads</span></div>
+  <nav class="modes" id="modes" aria-label="Game mode"></nav>
   <nav class="langs" id="langs" aria-label="Language"></nav>
 
   <div class="statusbar">
@@ -237,17 +245,24 @@
 
 <script>
   // ===== Instellingen =====
-  // Volgorde van de rotatie
+  // Beschikbare maps
   const MAPS = [
     { id: "haunted", name: "Haunted Hollow" },
     { id: "fortune", name: "Fortune's Keep" },
     { id: "rebirth", name: "Rebirth Island" },
   ];
   const SLOT_MS = 10 * 60 * 1000; // 10 minuten per map
-  // Ijkpunt: Fortune's Keep startte op vr 16 okt 2026 om 21:10:00 Amsterdamse tijd (19:10 UTC).
-  // Loopt de timer een paar seconden voor of achter? Pas dit tijdstip aan.
-  const ANCHOR_MS = Date.UTC(2026, 9, 16, 19, 10, 0);
-  const ANCHOR_INDEX = 1; // index in MAPS van de map die op het ijkpunt startte
+  // Rotatie per modus. Op het ijkpunt (vr 16 okt 2026, 22:10:00 Amsterdamse tijd = 20:10 UTC)
+  // startte order[0]; daarna volgt elke 10 minuten de volgende in de lijst.
+  // Loopt de timer een paar seconden voor of achter? Pas REF aan.
+  const REF = Date.UTC(2026, 9, 16, 20, 10, 0);
+  const MODES = {
+    solo:  { label: "Solo",  order: ["rebirth", "haunted", "fortune"], ref: REF },
+    duos:  { label: "Duos",  order: ["haunted", "fortune", "rebirth"], ref: REF },
+    quads: { label: "Quads", order: ["fortune", "rebirth", "haunted"], ref: REF },
+  };
+  const BY_ID = Object.fromEntries(MAPS.map(m => [m.id, m]));
+  let mode = "quads";
 
   // ===== Talen / Languages =====
   const I18N = {
@@ -272,6 +287,28 @@
     document.querySelectorAll("#langs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.l === l)));
     lastKey = ""; render();
   }
+  function detectMode() {
+    try { const q = new URLSearchParams(location.search).get("mode"); if (q && MODES[q.toLowerCase()]) return q.toLowerCase(); } catch (e) {}
+    try { const saved = localStorage.getItem("mode"); if (saved && MODES[saved]) return saved; } catch (e) {}
+    return "quads";
+  }
+  function setMode(m, save) {
+    mode = m;
+    if (save) {
+      try { localStorage.setItem("mode", m); } catch (e) {}
+      try { const u = new URL(location.href); u.searchParams.set("mode", m); history.replaceState(null, "", u); } catch (e) {}
+    }
+    document.getElementById("modeName").textContent = MODES[m].label;
+    document.querySelectorAll("#modes button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === m)));
+    lastKey = ""; render();
+  }
+  const modeNav = document.getElementById("modes");
+  Object.keys(MODES).forEach(m => {
+    const b = document.createElement("button");
+    b.type = "button"; b.dataset.m = m; b.textContent = MODES[m].label;
+    b.addEventListener("click", () => setMode(m, true));
+    modeNav.appendChild(b);
+  });
   const langNav = document.getElementById("langs");
   Object.keys(I18N).forEach(l => {
     const b = document.createElement("button");
@@ -286,11 +323,12 @@
   const fmtTime = d => d.toLocaleTimeString(I18N[lang].locale, { hour: "2-digit", minute: "2-digit", hour12: false });
 
   function slotAt(t) {
-    const elapsed = t - ANCHOR_MS;
-    const slot = Math.floor(elapsed / SLOT_MS);
-    const start = ANCHOR_MS + slot * SLOT_MS;
-    return { index: mod(ANCHOR_INDEX + slot, MAPS.length), start, end: start + SLOT_MS };
+    const ref = MODES[mode].ref;
+    const slot = Math.floor((t - ref) / SLOT_MS);
+    const start = ref + slot * SLOT_MS;
+    return { index: slot, start, end: start + SLOT_MS };
   }
+  const mapOf = i => { const o = MODES[mode].order; return BY_ID[o[mod(i, o.length)]]; };
 
   // Afbeelding: eerst /img/<id>.jpg proberen, anders de ingebouwde illustratie
   const imgAvailable = {};
@@ -314,7 +352,7 @@
   function render() {
     const now = Date.now();
     const cur = slotAt(now);
-    const map = MAPS[cur.index];
+    const map = mapOf(cur.index);
     const left = Math.max(0, cur.end - now);
     const secs = Math.ceil(left / 1000);
 
@@ -322,15 +360,15 @@
     $("timer").textContent = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60);
     $("timer").classList.toggle("urgent", secs <= 60);
     $("bar").style.width = ((now - cur.start) / SLOT_MS * 100).toFixed(2) + "%";
-    document.title = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60) + " · " + map.name;
+    document.title = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60) + " · " + map.name + " (" + MODES[mode].label + ")";
 
     // Alleen opnieuw opbouwen als de map wisselt
-    const key = cur.start + ":" + Object.keys(imgAvailable).join(",");
+    const key = mode + ":" + cur.start + ":" + Object.keys(imgAvailable).join(",");
     if (key === lastKey) return;
     lastKey = key;
 
     $("nowName").textContent = map.name;
-    $("nextName").textContent = MAPS[mod(cur.index + 1, MAPS.length)].name;
+    $("nextName").textContent = mapOf(cur.index + 1).name;
     const art = $("nowArt");
     [...art.querySelectorAll("img, svg")].forEach(n => n.remove());
     art.prepend(artFor(map.id, map.name));
@@ -339,7 +377,7 @@
     q.innerHTML = "";
     for (let i = 1; i <= 5; i++) {
       const start = cur.start + i * SLOT_MS;
-      const m = MAPS[mod(cur.index + i, MAPS.length)];
+      const m = mapOf(cur.index + i);
       const li = document.createElement("li");
       const thumb = document.createElement("div");
       thumb.className = "thumb";
@@ -356,6 +394,8 @@
     }
   }
 
+  mode = detectMode();
+  setMode(mode, false);
   setLang(detectLang(), false);
   setInterval(render, 1000);
   // Na terugkomen in de tab (mobiel) meteen bijwerken
