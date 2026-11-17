@@ -512,8 +512,24 @@
   setInterval(render, 1000);
 
   // ===== App-installatie (PWA) =====
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    // Make an installed PWA refresh as soon as its updated service worker takes over.
+    let refreshedForNewWorker = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!refreshedForNewWorker) {
+        refreshedForNewWorker = true;
+        location.reload();
+      }
+    });
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js", { updateViaCache: "none" })
+        .then(registration => {
+          registration.update().catch(() => {});
+          document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) registration.update().catch(() => {});
+          });
+        }).catch(() => {});
+    });
   }
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
