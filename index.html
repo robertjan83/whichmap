@@ -445,7 +445,7 @@
   MAPS.forEach(m => {
     const probe = new Image();
     probe.onload = () => { imgAvailable[m.id] = probe.src; lastKey = ""; render(); };
-    probe.src = "img/" + m.id + (m.id === "zodiac" ? ".svg" : ".jpg");
+    probe.src = "img/" + m.id + ".jpg";
   });
   function artFor(id, alt) {
     if (imgAvailable[id]) {

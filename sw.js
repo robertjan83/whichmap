@@ -1,12 +1,12 @@
 // PWA version 3: always go to the network first for HTML documents.
  // Offline fallback stays available, while installed PWAs pick up map changes.
-const CACHE = "whichmap-v3";
+const CACHE = "whichmap-v4";
 const SHELL = [
   "./",
   "index.html",
   "manifest.webmanifest",
   "img/logo.png",
-  "img/zodiac.svg",
+  "img/zodiac.jpg",
   "img/rebirth.jpg",
   "icons/icon-192.png",
   "icons/icon-512.png",
