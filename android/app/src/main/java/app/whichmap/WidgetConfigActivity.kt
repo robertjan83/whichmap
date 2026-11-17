@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 
-/** Vraagt bij het toevoegen van de widget om Solo, Duos of Quads. */
+/** Vraagt bij het toevoegen van de widget om de Resurgence- of Casuals-modus. */
 class WidgetConfigActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class WidgetConfigActivity : Activity() {
         })
         Rotation.MODE_LABEL.forEach { (mode, label) ->
             box.addView(Button(this).apply {
-                text = label
+                text = if (mode == "casuals") "Casuals · Quads" else "Resurgence · $label"
                 setOnClickListener {
                     MapWidgetProvider.saveMode(this@WidgetConfigActivity, id, mode)
                     MapWidgetProvider.update(this@WidgetConfigActivity, AppWidgetManager.getInstance(this@WidgetConfigActivity), id)

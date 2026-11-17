@@ -65,7 +65,7 @@ class MapWidgetProvider : AppWidgetProvider() {
 
             val rv = RemoteViews(context.packageName, R.layout.widget)
             rv.setImageViewResource(R.id.art, Rotation.MAP_RES.getValue(s.current))
-            rv.setTextViewText(R.id.mode, "RESURGENCE " + Rotation.MODE_LABEL.getValue(mode).uppercase())
+            rv.setTextViewText(R.id.mode, (if (mode == "casuals") "CASUALS " else "RESURGENCE ") + Rotation.MODE_LABEL.getValue(mode).uppercase())
             rv.setTextViewText(R.id.name, Rotation.MAP_NAME.getValue(s.current))
             rv.setTextViewText(
                 R.id.next,

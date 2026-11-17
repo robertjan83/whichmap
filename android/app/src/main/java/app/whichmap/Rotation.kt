@@ -1,22 +1,24 @@
 package app.whichmap
 
-/**
- * Zelfde rotatie als in index.html. Houd REF gelijk aan REF in index.html
- * (20:10 UTC = 22:10 Amsterdamse tijd op vr 16 okt 2026).
- */
+/** Zelfde tijdanker en volgorde als de website: 17 nov 2026, 23:50 CET = 22:50 UTC. */
 object Rotation {
     const val SLOT_MS = 10 * 60 * 1000L
-    const val REF = 1792181400000L
+    const val REF = 1794955800000L
 
-    // Op REF is order[0] actief; daarna elke 10 minuten de volgende.
+    // Op REF is order[0] actief; elke tien minuten wisselt de map.
     val ORDER = mapOf(
-        "solo" to listOf("rebirth", "haunted", "fortune"),
-        "duos" to listOf("haunted", "fortune", "rebirth"),
-        "quads" to listOf("fortune", "rebirth", "haunted"),
+        "solo" to listOf("zodiac", "rebirth"),
+        "duos" to listOf("rebirth", "zodiac"),
+        "trios" to listOf("zodiac", "rebirth"),
+        "quads" to listOf("rebirth", "zodiac"),
+        "casuals" to listOf("rebirth", "zodiac"),
     )
-    val MODE_LABEL = mapOf("solo" to "Solo", "duos" to "Duos", "quads" to "Quads")
-    val MAP_NAME = mapOf("haunted" to "Haunted Hollow", "fortune" to "Fortune's Keep", "rebirth" to "Rebirth Island")
-    val MAP_RES = mapOf("haunted" to R.drawable.map_haunted, "fortune" to R.drawable.map_fortune, "rebirth" to R.drawable.map_rebirth)
+    val MODE_LABEL = mapOf(
+        "solo" to "Solo", "duos" to "Duos", "trios" to "Trio",
+        "quads" to "Quads", "casuals" to "Quads"
+    )
+    val MAP_NAME = mapOf("zodiac" to "Zodiac", "rebirth" to "Rebirth Island")
+    val MAP_RES = mapOf("zodiac" to R.drawable.map_zodiac, "rebirth" to R.drawable.map_rebirth)
 
     data class Slot(val current: String, val next: String, val start: Long, val end: Long)
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Which Map — Warzone Resurgence</title>
-<meta name="description" content="Which map is live in Warzone Resurgence Solo, Duos or Quads? Live countdown and rotation.">
+<meta name="description" content="Live Zodiac and Rebirth Island rotation for Warzone Resurgence Solo, Duos, Trio, Quads and Casuals Quads.">
 <meta name="theme-color" content="#0a0b09">
 <link rel="icon" type="image/png" href="icons/favicon-64.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -53,7 +53,14 @@
   .mode::before, .mode::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--accent)); max-width: 90px; }
   .mode::after { transform: scaleX(-1); }
 
-  .modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
+  .app-title { font-family: "Teko", sans-serif; font-size: clamp(48px, 12vw, 70px); font-weight: 700; letter-spacing: .04em; line-height: .9; text-align: center; margin: 12px 0 8px; text-transform: uppercase; text-shadow: 0 2px 16px #000; }
+  .app-title span { color: var(--accent); }
+  .playlists { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; gap: 4px; border: 1px solid #74766f; border-radius: 999px; background: #1b1d19; margin: 12px 0 16px; }
+  .playlists button { min-width: 0; padding: 9px 5px 5px; border: 0; border-radius: 999px; background: transparent; color: var(--text); font: 600 24px/1 "Teko", sans-serif; letter-spacing: .09em; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .playlists button[aria-pressed="true"] { background: var(--accent); color: #0a0b09; box-shadow: 0 3px 12px #0006; }
+  .playlists button:focus-visible, .modes button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .modes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
+  .modes[hidden] { display: none; }
   .modes button {
     font-family: "Teko", sans-serif; font-size: 24px; letter-spacing: .2em; text-transform: uppercase; line-height: 1;
     background: var(--panel); color: var(--muted); border: 1px solid var(--line); border-bottom: 3px solid var(--line);
@@ -175,8 +182,13 @@
 <body>
 <div class="wrap">
   <img class="logo" src="img/logo.png" alt="Call of Duty Warzone" width="667" height="214">
-  <div class="mode">Resurgence <span id="modeName">Quads</span></div>
-  <nav class="modes" id="modes" aria-label="Game mode"></nav>
+  <h1 class="app-title">WHICH <span>MAP</span></h1>
+  <div class="mode"><span id="playlistName">Resurgence</span> <span id="modeName">Quads</span></div>
+  <nav class="playlists" id="playlists" aria-label="Playlist">
+    <button type="button" data-p="resurgence" aria-pressed="true">Resurgence</button>
+    <button type="button" data-p="casuals" aria-pressed="false">Casuals</button>
+  </nav>
+  <nav class="modes" id="modes" aria-label="Team size"></nav>
   <nav class="langs" id="langs" aria-label="Language"></nav>
 
   <div class="statusbar">
@@ -219,8 +231,7 @@
   </footer>
 </div>
 
-<!-- Map-illustraties (eigen artwork). Wil je echte screenshots? Zet ze in /img als
-     rebirth.jpg, fortune.jpg en haunted.jpg; de pagina gebruikt die dan automatisch. -->
+<!-- Map-illustraties als fallback wanneer een afbeelding niet beschikbaar is. -->
 <template id="art-rebirth">
   <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
@@ -295,24 +306,26 @@
 
 <script>
   // ===== Instellingen =====
-  // Beschikbare maps
+  // Op 17 november 2026, 23:50 CET (22:50 UTC) begint de volgende map.
+  // De 10-minutenrotatie loopt door vanaf dit gezamenlijke ijkpunt.
   const MAPS = [
-    { id: "haunted", name: "Haunted Hollow" },
-    { id: "fortune", name: "Fortune's Keep" },
     { id: "rebirth", name: "Rebirth Island" },
+    { id: "zodiac", name: "Zodiac" },
   ];
-  const SLOT_MS = 10 * 60 * 1000; // 10 minuten per map
-  // Rotatie per modus. Op het ijkpunt (vr 16 okt 2026, 22:10:00 Amsterdamse tijd = 20:10 UTC)
-  // startte order[0]; daarna volgt elke 10 minuten de volgende in de lijst.
-  // Loopt de timer een paar seconden voor of achter? Pas REF aan.
-  const REF = Date.UTC(2026, 9, 16, 20, 10, 0);
+  const SLOT_MS = 10 * 60 * 1000;
+  const REF = Date.UTC(2026, 10, 17, 22, 50, 0);
   const MODES = {
-    solo:  { label: "Solo",  order: ["rebirth", "haunted", "fortune"], ref: REF },
-    duos:  { label: "Duos",  order: ["haunted", "fortune", "rebirth"], ref: REF },
-    quads: { label: "Quads", order: ["fortune", "rebirth", "haunted"], ref: REF },
+    solo:    { label: "Solo",  order: ["zodiac", "rebirth"], ref: REF },
+    duos:    { label: "Duos",  order: ["rebirth", "zodiac"], ref: REF },
+    trios:   { label: "Trio",  order: ["zodiac", "rebirth"], ref: REF },
+    quads:   { label: "Quads", order: ["rebirth", "zodiac"], ref: REF },
+    casuals: { label: "Quads", order: ["rebirth", "zodiac"], ref: REF },
   };
+  const RESURGENCE_MODES = ["solo", "duos", "trios", "quads"];
   const BY_ID = Object.fromEntries(MAPS.map(m => [m.id, m]));
   let mode = "quads";
+  let playlist = "resurgence";
+  const activeMode = () => playlist === "casuals" ? "casuals" : mode;
 
   // ===== Talen / Languages =====
   const I18N = {
@@ -338,9 +351,14 @@
     lastKey = ""; render();
   }
   function detectMode() {
-    try { const q = new URLSearchParams(location.search).get("mode"); if (q && MODES[q.toLowerCase()]) return q.toLowerCase(); } catch (e) {}
-    try { const saved = localStorage.getItem("mode"); if (saved && MODES[saved]) return saved; } catch (e) {}
+    try { const q = new URLSearchParams(location.search).get("mode"); if (RESURGENCE_MODES.includes(q)) return q; } catch (e) {}
+    try { const saved = localStorage.getItem("mode"); if (RESURGENCE_MODES.includes(saved)) return saved; } catch (e) {}
     return "quads";
+  }
+  function detectPlaylist() {
+    try { const q = new URLSearchParams(location.search).get("playlist"); if (q === "casuals" || q === "resurgence") return q; } catch (e) {}
+    try { const saved = localStorage.getItem("playlist"); if (saved === "casuals" || saved === "resurgence") return saved; } catch (e) {}
+    return "resurgence";
   }
   function setMode(m, save) {
     mode = m;
@@ -348,12 +366,25 @@
       try { localStorage.setItem("mode", m); } catch (e) {}
       try { const u = new URL(location.href); u.searchParams.set("mode", m); history.replaceState(null, "", u); } catch (e) {}
     }
-    document.getElementById("modeName").textContent = MODES[m].label;
+    document.getElementById("modeName").textContent = playlist === "casuals" ? "Quads" : MODES[m].label;
     document.querySelectorAll("#modes button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === m)));
     lastKey = ""; render();
   }
+  function setPlaylist(p, save) {
+    playlist = p;
+    if (save) {
+      try { localStorage.setItem("playlist", p); } catch (e) {}
+      try { const u = new URL(location.href); u.searchParams.set("playlist", p); history.replaceState(null, "", u); } catch (e) {}
+    }
+    document.getElementById("playlistName").textContent = p === "casuals" ? "Casuals" : "Resurgence";
+    document.getElementById("modeName").textContent = p === "casuals" ? "Quads" : MODES[mode].label;
+    document.getElementById("modes").hidden = p === "casuals";
+    document.querySelectorAll("#playlists button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === p)));
+    lastKey = ""; render();
+  }
+  document.querySelectorAll("#playlists button").forEach(b => b.addEventListener("click", () => setPlaylist(b.dataset.p, true)));
   const modeNav = document.getElementById("modes");
-  Object.keys(MODES).forEach(m => {
+  RESURGENCE_MODES.forEach(m => {
     const b = document.createElement("button");
     b.type = "button"; b.dataset.m = m; b.textContent = MODES[m].label;
     b.addEventListener("click", () => setMode(m, true));
@@ -373,19 +404,19 @@
   const fmtTime = d => d.toLocaleTimeString(I18N[lang].locale, { hour: "2-digit", minute: "2-digit", hour12: false });
 
   function slotAt(t) {
-    const ref = MODES[mode].ref;
+    const ref = MODES[activeMode()].ref;
     const slot = Math.floor((t - ref) / SLOT_MS);
     const start = ref + slot * SLOT_MS;
     return { index: slot, start, end: start + SLOT_MS };
   }
-  const mapOf = i => { const o = MODES[mode].order; return BY_ID[o[mod(i, o.length)]]; };
+  const mapOf = i => { const o = MODES[activeMode()].order; return BY_ID[o[mod(i, o.length)]]; };
 
   // Afbeelding: eerst /img/<id>.jpg proberen, anders de ingebouwde illustratie
   const imgAvailable = {};
   MAPS.forEach(m => {
     const probe = new Image();
     probe.onload = () => { imgAvailable[m.id] = probe.src; lastKey = ""; render(); };
-    probe.src = "img/" + m.id + ".jpg";
+    probe.src = "img/" + m.id + (m.id === "zodiac" ? ".svg" : ".jpg");
   });
   function artFor(id, alt) {
     if (imgAvailable[id]) {
@@ -410,10 +441,10 @@
     $("timer").textContent = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60);
     $("timer").classList.toggle("urgent", secs <= 60);
     $("bar").style.width = ((now - cur.start) / SLOT_MS * 100).toFixed(2) + "%";
-    document.title = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60) + " · " + map.name + " (" + MODES[mode].label + ")";
+    document.title = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60) + " · " + map.name + " (" + (playlist === "casuals" ? "Casuals " : "Resurgence ") + MODES[activeMode()].label + ")";
 
     // Alleen opnieuw opbouwen als de map wisselt
-    const key = mode + ":" + cur.start + ":" + Object.keys(imgAvailable).join(",");
+    const key = activeMode() + ":" + cur.start + ":" + Object.keys(imgAvailable).join(",");
     if (key === lastKey) return;
     lastKey = key;
 
@@ -445,7 +476,9 @@
   }
 
   mode = detectMode();
+  playlist = detectPlaylist();
   setMode(mode, false);
+  setPlaylist(playlist, false);
   setLang(detectLang(), false);
   setInterval(render, 1000);
 

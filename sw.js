@@ -1,14 +1,13 @@
 // Service worker: houdt de app offline beschikbaar. De rotatie wordt lokaal
 // berekend, dus de pagina werkt zonder internet. Updates komen binnen bij het
 // volgende openen (stale-while-revalidate). Verhoog CACHE bij grote wijzigingen.
-const CACHE = "whichmap-v1";
+const CACHE = "whichmap-v2";
 const SHELL = [
   "./",
   "index.html",
   "manifest.webmanifest",
   "img/logo.png",
-  "img/fortune.jpg",
-  "img/haunted.jpg",
+  "img/zodiac.svg",
   "img/rebirth.jpg",
   "icons/icon-192.png",
   "icons/icon-512.png",

@@ -27,7 +27,8 @@ class MainActivity : Activity() {
         setContentView(web)
 
         val mode = intent.getStringExtra("mode")
-        val query = if (mode != null && Rotation.ORDER.containsKey(mode)) "?mode=$mode" else ""
+        val query = if (mode == "casuals") "?playlist=casuals&mode=quads"
+                    else if (mode != null && Rotation.ORDER.containsKey(mode)) "?playlist=resurgence&mode=$mode" else ""
         web.loadUrl("file:///android_asset/index.html$query")
         MapWidgetProvider.updateAll(this)
     }
@@ -36,7 +37,8 @@ class MainActivity : Activity() {
         super.onNewIntent(intent)
         setIntent(intent)
         val mode = intent.getStringExtra("mode")
-        if (mode != null && Rotation.ORDER.containsKey(mode)) web.loadUrl("file:///android_asset/index.html?mode=$mode")
+        if (mode == "casuals") web.loadUrl("file:///android_asset/index.html?playlist=casuals&mode=quads")
+        else if (mode != null && Rotation.ORDER.containsKey(mode)) web.loadUrl("file:///android_asset/index.html?playlist=resurgence&mode=$mode")
     }
 
     override fun onBackPressed() {
